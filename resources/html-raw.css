@@ -1,0 +1,178 @@
+#range,#axis,#area,#area>div,#plot{
+	position:absolute;
+	left:0px;
+	right:0px;
+	top:0px;
+	bottom:0px;
+}
+#axis{z-index:1;}
+#area{z-index:2;}
+#drawView>#range{z-index:3;}
+#plot{z-index:4;}
+
+#axis>div{
+	transition:border-color 0.3s ease-in-out;
+	border:none var(--axis-color) 1px;
+	position:absolute;
+	left:0px;
+	top:0px;
+}
+#axis>div:first-child{
+	border-right-style:solid;
+	bottom:0px;
+	width:50%;
+}
+#axis>div:last-child{
+	border-bottom-style:solid;
+	right:0px;
+	height:50%;
+}
+
+#area>div[style*="--"]:not(.oval){
+	opacity:calc( var(--rate)*0.6 + 0.1 );
+	transform:rotate(var(--theta));
+	transform-origin:center center;
+}
+#area>div:not(*[style*="--"]){visibility:hidden;}
+#area>div>div{
+	position:absolute;
+	top:calc( 50% - 100vmax );
+	bottom:calc( 50% - 100vmax );
+}
+#area>div>.line{
+	transition:background-color 0.3s ease-in-out;
+	left: calc( 50% + var(--r2)*50% - 3px );
+	right:calc( 50% - var(--r2)*50% - 3px );
+	background-color:var(--foreground);
+}
+#area>div>.area1,#area>div>.area2{
+	transition:background-color 0.3s ease-in-out,opacity 0.3s ease-in-out;
+	opacity:var(--area-opacity);
+	background-color:var(--foreground);
+}
+#area>div>.area1{
+	left: calc( 50% + var(--r1)*50% );
+	right:calc( 50% - var(--r3)*50% );
+}
+#area>div>.area2{
+	left: calc( 50% + var(--r0)*50% );
+	right:calc( 50% - var(--r4)*50% );
+}
+#area>.x{
+	z-index:1;
+	--foreground:var(--area-x-color);
+}
+#area>.y{
+	z-index:1;
+	--foreground:var(--area-y-color);
+}
+#area>.pc1,#area>.pc2{
+	z-index:2;
+	--foreground:var(--area-pc-color);
+}
+#area>.xy{
+	z-index:3;
+	--foreground:var(--area-xy-color);
+}
+#area>.yx{
+	z-index:3;
+	--foreground:var(--area-yx-color);
+}
+#area>.oval{
+	z-index:4;
+	--foreground:var(--area-oval-color);
+}
+#area>.oval>.area1,#area>.oval>.area2{
+	border-radius:50%;
+	transform-origin:center center;
+	left:0px;
+	right:0px;
+	top:0px;
+	bottom:0px;
+	transform:matrix(
+		calc(var(--mxx)*var(--k)),
+		calc(var(--myx)*var(--k)),
+		calc(var(--mxy)*var(--k)),
+		calc(var(--myy)*var(--k)),
+		0,0) translate(calc( var(--cx)/var(--k)*50% ),calc( var(--cy)/var(--k)*50% )) ;
+}
+#area>.oval>.area1{--k:1;}
+#area>.oval>.area2{--k:2;}
+
+#plot>div{
+	background-color:var(--plot-color);
+	border-radius:50%;
+	position:absolute;
+}
+#plot>div>div{
+	border-radius:50%;
+	position:absolute;
+	left:-10px;
+	right:-10px;
+	top:-10px;
+	bottom:-10px;
+}
+.touch #plot>div>div{
+	left:-20px;
+	right:-20px;
+	top:-20px;
+	bottom:-20px;
+}
+
+@media screen {
+	.squared #axis,.squared #area,.squared #plot{
+		left:var(--square-left-margin);
+		right:var(--square-right-margin);
+		top:var(--square-top-margin);
+		bottom:var(--square-bottom-margin);
+	}
+	#range>div,#plot>div{
+		transition:background-color 0.3s ease-in-out;
+	}
+	.squared,#range>div{
+		background-color:var(--square-shadow);
+	}
+	#drawView>#range>div{
+		visibility:visible;
+		opacity:0.4;
+	}
+
+	.squared #axis>div:first-child{
+		top:calc( -1 * var(--square-top-margin) );
+		bottom:calc( -1 * var(--square-bottom-margin) );
+	}
+	.squared #axis>div:last-child{
+		left:calc( -1 * var(--square-left-margin) );
+		right:calc( -1 * var(--square-right-margin) );
+	}
+}
+@media print {
+	#range{
+		visibility:hidden;
+	}
+	#area,#plot{
+		-webkit-print-color-adjust:exact;
+	}
+	#area>div>.line{
+		opacity:1;
+		left: calc( 50% + var(--r2)*50% - 0.5px );
+		right:calc( 50% - var(--r2)*50% - 0.5px );
+	}
+	#area>div>.area1,#area>div>.area2,#area>.oval>div{
+		opacity:1;
+		box-sizing:border-box;
+		border-style:none solid;
+		border-color:var(--foreground);
+		border-width:1px;
+		background-color:transparent;
+	}
+	#area>.oval>div{
+		border-width:2;
+	}
+	#plot>div{
+		left:-5px;
+		right:-5px;
+		top:-5px;
+		bottom:-5px;
+	}
+}

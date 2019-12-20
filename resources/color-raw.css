@@ -1,0 +1,79 @@
+@media screen {
+	.light{
+		--square-shadow:#cccccc;
+		--axis-color:#666666;
+		--area-opacity:0.5;
+		--area-line-opacity:1;
+		--area-x-color:#00cc00;
+		--area-y-color:#0000cc;
+		--area-pc-color:#cc0000;
+		--area-xy-color:#66cc00;
+		--area-yx-color:#6600cc;
+		--area-oval-color:#666666;
+		--plot-color:#cc00cc;
+		--turned-on:#000000;
+	}
+}
+@media screen {
+	.dark{
+		--square-shadow:#333333;
+		--axis-color:#999999;
+		--area-opacity:0.5;
+		--area-line-opacity:1;
+		--area-x-color:#33ff33;
+		--area-y-color:#3333ff;
+		--area-pc-color:#ff3333;
+		--area-xy-color:#99ff33;
+		--area-yx-color:#9933ff;
+		--area-oval-color:#999999;
+		--plot-color:#ff66ff;
+		--turned-on:#ffffff;
+	}
+}
+@media screen and (prefers-color-scheme: light) {
+	.pcs{
+		--square-shadow:#cccccc;
+		--axis-color:#666666;
+		--area-opacity:0.5;
+		--area-line-opacity:1;
+		--area-x-color:#00cc00;
+		--area-y-color:#0000cc;
+		--area-pc-color:#cc0000;
+		--area-xy-color:#66cc00;
+		--area-yx-color:#6600cc;
+		--area-oval-color:#666666;
+		--plot-color:#cc00cc;
+		--turned-on:#000000;
+	}
+}
+@media screen and (prefers-color-scheme: dark) {
+	.pcs{
+		--square-shadow:#333333;
+		--axis-color:#999999;
+		--area-opacity:0.5;
+		--area-line-opacity:1;
+		--area-x-color:#33ff33;
+		--area-y-color:#3333ff;
+		--area-pc-color:#ff3333;
+		--area-xy-color:#99ff33;
+		--area-yx-color:#9933ff;
+		--area-oval-color:#999999;
+		--plot-color:#ff66ff;
+		--turned-on:#ffffff;
+	}
+}
+@media print {
+	html{
+		--square-shadow:inherit;
+		--axis-color:#7f7f7f;
+		--area-opacity:1;
+		--area-line-opacity:1;
+		--area-x-color:#009900;
+		--area-y-color:#000099;
+		--area-pc-color:#990000;
+		--area-xy-color:#4d9900;
+		--area-yx-color:#4d0099;
+		--area-oval-color:#4d4d4d;
+		--plot-color:#cc00cc;
+	}
+}
