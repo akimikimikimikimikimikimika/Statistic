@@ -1,27 +1,4 @@
-(()=>{
-
-	/* Preset values: If you change these values, they will be applied to some behaviour. */
-
-	let σ=1/3; /* variance of N ⚀ */
-	let μ=0; /* average of N ⚀ */
-
-	/* end preset values */
-
-
-
-	let sc=(e,c)=>{
-		if (c) e.setAttribute("class",c);
-		else e.removeAttribute("class");
-		return e;
-	},html=document.documentElement;
-
-	let cs=(()=>{
-		let mm=s=>window.matchMedia(`(prefers-color-scheme: ${s})`);
-		return {
-			light:mm("light"),
-			dark:mm("dark")
-		};
-	})();
+window.framework("status",(sc,mal,csm,cd,html,o)=>{
 
 	let update=t=>{
 		let c=[
@@ -34,6 +11,17 @@
 		if (t.standalone) c.push("standalone");
 		if (t.browser) c.push(t.browser.toLowerCase());
 		sc(html,c.join(" "));
+		if (o.func) o.func.update();
+	};
+	let getter=(t,p)=>{
+		if (p=="dark") {
+			if (t.colorSchemePreferred) return csm("dark");
+		}
+		else if (p=="squared") {
+			if (t.printing) return 0;
+			else return t.squared;
+		}
+		else return t[p];
 	};
 	let setter=(t,p,v)=>{
 		if ((p=="menuShown")&&(t[p]!=v)) {
@@ -45,6 +33,11 @@
 				update(t);
 			},v?0:500);
 		}
+		if ((p=="dark")&&(t.colorSchemePreferred)) return;
+		if (p=="colorSchemePreferred") {
+			if (csm("light")||csm("dark")) return;
+			t.dark=csm("dark");
+		}
 		t[p]=v;
 		update(t);
 	};
@@ -52,7 +45,7 @@
 	let msl=["menu-hidden","before-menu-shown","menu-shown","hiding-menu"];
 	var ms=0;
 
-	let s=new Proxy({
+	let t={
 		moving:false,
 		standalone:false,
 		menuShown:false,
@@ -71,34 +64,31 @@
 		oval:1,
 		unbiased:0,
 		squared:0,
-		dark:false,
-		σ:σ,
-		μ:μ,
-		colorSchemePreferred:false,
+		printing:false,
+		dark:csm("dark"),
+		colorSchemePreferred:csm("light")||csm("dark"),
 		browser:null
-	},{set:setter});
+	};
+
+	let s=new Proxy(t,{set:setter,get:getter});
 
 	(()=>{
-		s.standalone=navigator.standalone===true||(/standalone=yes/).test(location.search);
-		s.touch=document.createElement("div").ontouchstart===null;
+		t.standalone=navigator.standalone===true||(/standalone=yes/).test(location.search);
+		t.touch=cd().ontouchstart===null;
+		if (window.ApplePaySession) t.browser="Safari";
+		if (window.chrome) t.browser="Chrome";
+		if (window.sidebar) t.browser="Firefox";
 		s.online=(()=>{
 			let p=location.protocol;
 			return /https/.test(p)||(/http/.test(p)&&location.hostname=="localhost");
 		})();
-		if (window.ApplePaySession) s.browser="Safari";
-		if (window.chrome) s.browser="Chrome";
-		if (window.sidebar) s.browser="Firefox";
-		let csp=cs.light.matches||cs.dark.matches;
-		s.colorSchemePreferred=csp;
-		if (csp) s.dark=cs.dark.matches;
-		cs.light.addListener(m=>{if (s.colorSchemePreferred&&m.matches) s.dark=false;});
-		cs.dark.addListener(m=>{if (s.colorSchemePreferred&&m.matches) s.dark=true;});
+		mal("print",m=>s.printing=m.matches);
 	})();
 
 	if (s.online) try{
 		["../Library/ServiceWorker.js","ServiceWorker.js"].forEach(f=>navigator.serviceWorker.register(f).then(r=>r.update()));
 	}catch(e){}
 
-	window.res("status",()=>s);
+	return s;
 
-})();
+});

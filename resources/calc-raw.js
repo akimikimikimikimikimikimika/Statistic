@@ -1,23 +1,8 @@
-(()=>{
-
-	/* Preset values: If you change these values, they will be applied to some behaviour. */
-
-	let randomBuffer=255; /* number of values created at once by getRandomValues */
-	let invErfBuffer=25; /* dimensions in approximation of inverse erf */
-	let installedPoints=[
-		{x:-0.6,y: 0.3},
-		{x: 0.2,y:-0.5}
-	]; /* points shown at launch */
-
-	/* end preset values */
-
-
-
-	var funcs,status;
+window.framework("calc",(preset,func,status)=>{
 
 	/* create RNG */
 	let rand=(()=>{
-		var use=false,a,p=randomBuffer;
+		var use=false,a,p=preset.randomBuffer;
 		/*
 			use: whether cryptography secure RNG
 			a: an array of generated values
@@ -54,7 +39,7 @@
 		/* the setup function: create coefficients */
 		let su=()=>{
 			let co=Math.sqrt(Math.PI)/2;
-			for (var k=0;k<=invErfBuffer;k++) {
+			for (var k=0;k<=preset.invErfBuffer;k++) {
 				c[k]=k?0:1;
 				if (k>0) for (var m=0;m<k;m++) c[k]+=c[m]*c[k-1-m]/(m+1)/(2*m+1);
 				s[k]=c[k]/(2*k+1)*(co**(2*k+1));
@@ -64,7 +49,7 @@
 		/* raw calculation */
 		let raw=z=>{
 			var v=0;
-			for (var k=0;k<=invErfBuffer;k++) v+=s[k]*(z**(2*k+1));
+			for (var k=0;k<=preset.invErfBuffer;k++) v+=s[k]*(z**(2*k+1));
 			return v;
 		};
 		/* fit raw value to proper average and variance */
@@ -76,7 +61,7 @@
 	})();
 
 	/* points coordinate array */
-	let points=installedPoints;
+	let points=preset.installedPoints;
 
 	/* calculate basic values */
 	let μ={x:0,y:0}, /* average */
@@ -254,6 +239,8 @@
 		if (v>2) c.oval=oval();
 	};
 
+	func.update(update);
+
 	let c={
 		xy:null,
 		pc:null,
@@ -263,29 +250,24 @@
 		/* create random points */
 		random:()=>{
 			points.push({x:rand(),y:rand()});
-			funcs.update();
+			func.update();
 		},
 		/* create normalized random points */
 		normRandom:()=>{
 			let f=()=>{
-				let r=invErf(rand(),status.σ,status.μ);
+				let r=invErf(rand(),preset.σ,preset.μ);
 				if (abs(r)>1) return f();
 				else return r;
 			};
 			points.push({x:f(),y:f()});
-			funcs.update();
+			func.update();
 		},
 		/* remove all points */
 		clear:()=>{
 			points.length=0;
-			funcs.update();
+			func.update();
 		}
 	};
+	return c;
 
-	window.res("calc",(f,s)=>{
-		funcs=f,status=s;
-		funcs.update(update);
-		return c;
-	});
-
-})();
+});

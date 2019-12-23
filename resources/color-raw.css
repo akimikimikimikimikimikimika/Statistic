@@ -1,9 +1,13 @@
 @media screen {
 	.light{
+		--background-color:#ffffff;
+		--statusbar-color:#999999;
+		--menu-shadow-color:#666666;
+		--menu-container-color:rgba(255,255,255,0.8);
+		--menu-button-foreground:#ffffff;
+		--menu-button-background:rgba(102,102,102,0.8);
 		--square-shadow:#cccccc;
 		--axis-color:#666666;
-		--area-opacity:0.5;
-		--area-line-opacity:1;
 		--area-x-color:#00cc00;
 		--area-y-color:#0000cc;
 		--area-pc-color:#cc0000;
@@ -16,10 +20,14 @@
 }
 @media screen {
 	.dark{
+		--background-color:#000000;
+		--statusbar-color:transparent;
+		--menu-shadow-color:#cccccc;
+		--menu-container-color:rgba(0,0,0,0.8);
+		--menu-button-foreground:#000000;
+		--menu-button-background:rgba(204,204,204,0.8);
 		--square-shadow:#333333;
 		--axis-color:#999999;
-		--area-opacity:0.5;
-		--area-line-opacity:1;
 		--area-x-color:#33ff33;
 		--area-y-color:#3333ff;
 		--area-pc-color:#ff3333;
@@ -32,10 +40,14 @@
 }
 @media screen and (prefers-color-scheme: light) {
 	.pcs{
+		--background-color:#ffffff;
+		--statusbar-color:#999999;
+		--menu-shadow-color:#666666;
+		--menu-container-color:rgba(255,255,255,0.8);
+		--menu-button-foreground:#ffffff;
+		--menu-button-background:rgba(102,102,102,0.8);
 		--square-shadow:#cccccc;
 		--axis-color:#666666;
-		--area-opacity:0.5;
-		--area-line-opacity:1;
 		--area-x-color:#00cc00;
 		--area-y-color:#0000cc;
 		--area-pc-color:#cc0000;
@@ -48,10 +60,14 @@
 }
 @media screen and (prefers-color-scheme: dark) {
 	.pcs{
+		--background-color:#000000;
+		--statusbar-color:transparent;
+		--menu-shadow-color:#cccccc;
+		--menu-container-color:rgba(0,0,0,0.8);
+		--menu-button-foreground:#000000;
+		--menu-button-background:rgba(204,204,204,0.8);
 		--square-shadow:#333333;
 		--axis-color:#999999;
-		--area-opacity:0.5;
-		--area-line-opacity:1;
 		--area-x-color:#33ff33;
 		--area-y-color:#3333ff;
 		--area-pc-color:#ff3333;
@@ -64,10 +80,14 @@
 }
 @media print {
 	html{
-		--square-shadow:inherit;
+		--background-color:transparent;
+		--statusbar-color:transparent;
+		--menu-shadow-color:transparent;
+		--menu-container-color:transparent;
+		--menu-button-foreground:transparent;
+		--menu-button-background:transparent;
+		--square-shadow:transparent;
 		--axis-color:#7f7f7f;
-		--area-opacity:1;
-		--area-line-opacity:1;
 		--area-x-color:#009900;
 		--area-y-color:#000099;
 		--area-pc-color:#990000;
@@ -75,5 +95,6 @@
 		--area-yx-color:#4d0099;
 		--area-oval-color:#4d4d4d;
 		--plot-color:#cc00cc;
+		--turned-on:transparent;
 	}
 }

@@ -11,7 +11,7 @@
 
 
 /* define sizes of all container views */
-body,#base,#backgroundView,#range,#drawView,#inputView,#menuView,#menuShadow{
+body,#base,#backgroundView,#range,#drawView,#drawView>div,#inputView,#menuView,#menuShadow{
 	position:absolute;
 	left:0px;
 	right:0px;
@@ -25,10 +25,10 @@ body,#base,#backgroundView,#range,#drawView,#inputView,#menuView,#menuShadow{
 	z-index:2;
 }
 #drawView{
-	z-index:3;
+	z-index:4;
 }
 #range:not(#drawView #range){
-	z-index:4;
+	z-index:3;
 }
 #inputView{
 	z-index:5;
@@ -107,8 +107,20 @@ body,#base,#backgroundView,#range,#drawView,#inputView,#menuView,#menuShadow{
 
 
 
+/* background definition */
+@media screen {
+	html,#backgroundView{
+		background-color:var(--background-color);
+		transition:background-color 0.3s ease-in-out;
+	}
+}
+
+
+
 /* statusbar definition */
 #statusbar{
+	background-color:var(--statusbar-color);
+	transition:background-color 0.3s ease-in-out;
 	position:absolute;
 	left:0px;
 	right:0px;
@@ -116,7 +128,9 @@ body,#base,#backgroundView,#range,#drawView,#inputView,#menuView,#menuShadow{
 	height:0px;
 	height:env(safe-area-inset-top);
 }
-.squared #statusbar{background-color:transparent !important;}
+.squared #statusbar{
+	background-color:transparent;
+}
 
 
 
@@ -127,8 +141,9 @@ body,#base,#backgroundView,#range,#drawView,#inputView,#menuView,#menuShadow{
 
 /* menu definition */
 #menuButton{
+	background-color:var(--menu-button-background);
+	transition:background-color 0.3s ease-in-out,opacity 0.5s ease-in-out;
 	border-radius:50%;
-	transition:opacity 0.5s ease-in-out;
 	cursor:pointer;
 	position:absolute;
 	right:10px;
@@ -141,12 +156,14 @@ body,#base,#backgroundView,#range,#drawView,#inputView,#menuView,#menuShadow{
 .menu-shown #menuButton{opacity:0;}
 .menu-hidden #menuView{visibility:hidden;}
 #menuShadow{
+	background-color:var(--menu-shadow-color);
 	opacity:0;
 	transition:opacity 0.5s ease-in-out,background-color 0.3s ease-in-out;
 	z-index:1;
 }
 .menu-shown #menuShadow{opacity:0.3;}
 #menuContainer{
+	background-color:var(--menu-container-color);
 	border-radius:5px;
 	transform:translateX(calc( 100% + 10px + env(safe-area-inset-right) ));
 	transition:transform 0.5s ease-in-out,background-color 0.3s ease-in-out;
@@ -172,6 +189,9 @@ body,#base,#backgroundView,#range,#drawView,#inputView,#menuView,#menuShadow{
     touch-action:pan-x;
 }
 #menu>div{
+	color:var(--menu-button-foreground);
+	background-color:var(--menu-button-background);
+	transition:background-color 0.3s ease-in-out,color 0.3s ease-in-out;
 	font-size:25px;
 	font-weight:200;
 	font-family:standard;
@@ -205,6 +225,9 @@ body,#base,#backgroundView,#range,#drawView,#inputView,#menuView,#menuShadow{
 		margin:0px;
 		position:fixed;
 	}
+	.squared{
+		background-color:var(--square-shadow);
+	}
 }
 @page{ size: A4 portrait; }
 @media print {
@@ -221,85 +244,5 @@ body,#base,#backgroundView,#range,#drawView,#inputView,#menuView,#menuShadow{
 	}
 	#backgroundView,#menuButton,#menuView{
 		visibility:hidden;
-	}
-}
-
-/* color definition */
-@media screen {
-	html,#backgroundView,#statusbar{
-		transition:background-color 0.3s ease-in-out;
-	}
-	#menu>div,#inputView>div{
-		transition:background-color 0.3s ease-in-out,color 0.3s ease-in-out;
-	}
-}
-@media screen {
-	html.light,.light #backgroundView{
-		background-color:#ffffff;
-	}
-	html.dark,.dark #backgroundView{
-		background-color:#000000;
-	}
-	.light #statusbar{
-		background-color:#999999;
-	}
-	.dark #statusbar{
-		background-color:transparent;
-	}
-	.light #menuShadow{
-		background-color:#666666;
-	}
-	.dark #menuShadow{
-		background-color:#cccccc;
-	}
-	.light #menuContainer{
-		background-color:rgba(255,255,255,0.8);
-	}
-	.dark #menuContainer{
-		background-color:rgba(0,0,0,0.8);
-	}
-	.light #menu>div,.light #menuButton{
-		color:#ffffff;
-		background-color:rgba(102,102,102,0.8);
-	}
-	.dark #menu>div,.dark #menuButton{
-		color:#000000;
-		background-color:rgba(204,204,204,0.8);
-	}
-}
-@media screen and (prefers-color-scheme: light) {
-	html.pcs,.pcs #backgroundView{
-		background-color:#ffffff;
-	}
-	.pcs #statusbar{
-		background-color:#999999;
-	}
-	.pcs #menuShadow{
-		background-color:#666666;
-	}
-	.pcs #menuContainer{
-		background-color:rgba(255,255,255,0.8);
-	}
-	.pcs #menu>div,.pcs #menuButton{
-		color:#ffffff;
-		background-color:rgba(102,102,102,0.8);
-	}
-}
-@media screen and (prefers-color-scheme: dark) {
-	html.pcs,.pcs #backgroundView{
-		background-color:#000000;
-	}
-	.pcs #statusbar{
-		background-color:transparent;
-	}
-	.pcs #menuShadow{
-		background-color:#cccccc;
-	}
-	.pcs #menuContainer{
-		background-color:rgba(0,0,0,0.8);
-	}
-	.pcs #menu>div,.pcs #menuButton{
-		color:#000000;
-		background-color:rgba(204,204,204,0.8);
 	}
 }

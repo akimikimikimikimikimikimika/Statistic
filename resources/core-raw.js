@@ -1,103 +1,119 @@
-(()=>{
+window.framework("func",(status,ael)=>{
 
-	let cd=(i,t)=>{let d=document.createElement("div");if (i) d.id=i;if (t) d.textContent=t;return d;},ap=(p,c)=>p.appendChild(c),rc=c=>c.parentNode.removeChild(c),ael=(e,t,f)=>e.addEventListener(t,f);
+	/*
+		update(fn) : register a function "fn" in the update list
+		update(fn,true) : register a function "fn" in the resize list
+		update() : execute all functions in the update list
+	*/
+	let update=(p,r)=>{
+		if (p) {
+			updateList.push(p);
+			if (r) resizeList.push(p);
+		}
+		else updateList.forEach(i=>i());
+	};
+	let updateList=[],resizeList=[];
+	ael(window,"resize",()=>resizeList.forEach(f=>f()));
 
-	let main=()=>{
-
-		let funcs={
-			/*
-				update(fn) : register a function "fn" in the update list
-				update(fn,true) : register a function "fn" in the resize update list
-				update() : execute all functions in the update list
-			*/
-			update:(()=>{
-				/* the update list & resize update list */
-				let l=[],rs=[];
-				ael(window,"resize",()=>rs.forEach(f=>f()));
-				return (p,r)=>{
-					if (p) {
-						l.push(p);
-						if (r) rs.push(p);
-					}
-					else l.forEach(i=>i());
-				};
-			})(),
-			scheme:()=>{
-				status.colorSchemePreferred=false;
-				status.dark=!status.dark;
-			},
-			switch:(s,m)=>{
-				status[s]=(status[s]+1)%m;
-				funcs.update();
+	let cueManager=(callable)=>{
+		let cues=[];
+		f.update(()=>{
+			if (callable()) for (let c of cues) {
+				if (
+					((!status.squared)&&(c.type&1))||
+					(status.squared&&(c.type&2))
+				) c.func();
 			}
-		};
-
-		/* initialize module */
-		let status=statusInit();
-		let calc=calcInit(funcs,status);
-		let input=inputInit(funcs,status,calc);
-		let menu=menuInit(funcs,status,calc);
-		let renderer=[
-			htmlInit(funcs,status,calc)
-		];
-
-		ael(window,"load",()=>{
-			while (document.body.firstChild) rc(document.body.firstChild);
-			ap(document.body,base);
-			funcs.update();
 		});
+		f.update(()=>{
+			if (callable()) for (let c of cues) {
+				if (
+					c.always&&(
+						((!status.squared)&&(c.type&1))||
+						(status.squared&&(c.type&2))
+					)
+				) c.func();
+			}
+		},true);
+		let addCue=(t,a,f)=>cues.push({
+			type:t,
+			always:a,
+			func:f
+		});
+		/*
+			t=1: called when status.squared is false
+			t=2: called when status.squared is true
+			t=3: called in both cases
+			a: if false, called only when figures update or status.squared is changed, otherwise also called when the window resized
+		*/
 
-		/* prepare nodes */
-		let base=cd("base");
-		ap(base,cd("backgroundView"));
-		ap(base,cd("statusbar"));
-		ap(base,input);
-		ap(base,menu.view);
-		ap(base,menu.button);
-
-		renderer[0].setup();
-		ap(base,renderer[0].artifact);
-
+		return addCue;
 	};
 
-	var statusInit,calcInit,inputInit,menuInit,htmlInit;
+	let f={
+		update:update,
+		cueManager:cueManager,
+		scheme:()=>{
+			status.colorSchemePreferred=false;
+			status.dark=!status.dark;
+		},
+		switch:(k,m)=>status[k]=(status[k]+1)%m
+	};
 
-	new Promise(r=>{
+	return f;
 
-		var counter=0;
-		let getResource=(n,s)=>{
-			switch (n) {
-				case "status":
-					statusInit=s;
-					counter++;
-					break;
-				case "menu":
-					menuInit=s;
-					counter++;
-					break;
-				case "calc":
-					calcInit=s;
-					counter++;
-					break;
-				case "input":
-					inputInit=s;
-					counter++;
-					break;
-				case "html":
-					htmlInit=s;
-					counter++;
-					break;
+});
+window.framework("nodes",(func,renderer,input,menu,cd,ap,rc,ael)=>{
+
+	ael(window,"load",()=>{
+		let body=document.body;
+		while (body.firstChild) rc(body.firstChild);
+		ap(body,base);
+		func.update();
+	});
+
+	let base=cd("base");
+	ap(base,cd("backgroundView"));
+	ap(base,cd("statusbar"));
+	ap(base,input);
+	ap(base,renderer.view);
+	ap(base,menu.view);
+	ap(base,menu.button);
+
+});
+window.framework("renderer",(xhtml,svg,canvas,cd,ap,rc,tc)=>{
+
+	let d=cd("drawView");
+	var current=-1;
+	let list=[xhtml,svg,canvas];
+
+	let r={node:cd("range")};
+	for (let d of ["left","right","top","bottom"]) r[d]=ap(r.node,tc(cd(),d));
+
+	let o={
+		icon:"",
+		length:list.length,
+		view:d,
+		next:()=>{
+			if (current>=0) {
+				let c=list[current];
+				rc(c.artifact);
+				c.visible=false;
 			}
-			confirm();
-		};
-		let confirm=()=>{
-			if (counter==5) {
-				delete window.res;
-				r();
-			}
-		};
-		window.res=(n,s)=>getResource(n,s);
+			let n=(current+1)%list.length;
+			let c=list[n];
+			if (!c.artifact) c.setup(r);
+			if (c.includeRange) ap(c.artifact,r.node);
+			else ap(d,r.node);
+			ap(d,c.artifact);
+			c.visible=true;
+			current=n;
+			o.icon=c.icon;
+		}
+	};
 
-	}).then(main);
+	o.next();
 
-})();
+	return o;
+
+});

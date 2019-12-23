@@ -1,8 +1,4 @@
-(()=>{
-
-	let ce=t=>document.createElement(t),cd=(i,c,t)=>{let d=ce("div");if (i) d.id=i;if (c) d.className=c;if (t) d.textContent=t;return d;},ap=(p,c)=>p.appendChild(c),sa=(e,k,v)=>e.setAttribute(k,v),ael=(e,t,f)=>e.addEventListener(t,f);
-
-	var funcs,status,calc;
+window.framework("menu",(func,status,calc,renderer,cd,ap,sa,ss,ael)=>{
 
 	/* Convert a div element to button */
 	let mb=(t,a,r)=>{
@@ -71,7 +67,8 @@
 	mb(ms,close);
 
 	/* update button label */
-	let update=()=>{
+	func.cueManager(()=>true)(3,false,()=>{
+		rb.textContent=renderer.icon;
 		areaMode.textContent=(["σ","AD","Q"])[status.areaMode];
 		bc(SQ,"squared","--turned-on");
 		bc(X,"x","--area-x-color");
@@ -81,40 +78,42 @@
 		bc(YX,"yx","--area-yx-color");
 		bc(OV,"oval","--turned-on");
 		unbiased.textContent=(["B","UB"])[status.unbiased];
-	};
-	let bc=(b,s,h)=>{
-		b.style.backgroundColor=status[s]?`var(${h})`:"";
-	};
+	});
+	let bc=(b,s,h)=>ss(b,"background-color",status[s]?`var(${h})`:"");
 
 	/* Menu buttons */
-	mb("CS",()=>funcs.scheme());
+	mb("CS",()=>func.scheme());
+	let rb=mb("",()=>{
+		renderer.next();
+		func.update();
+	});
 	mb("CL",()=>calc.clear());
 	let SQ=mb("SQ",()=>{
-		funcs.switch("squared",2);
+		func.switch("squared",2);
 	});
 	let X=mb("X",()=>{
-		funcs.switch("x",3);
+		func.switch("x",3);
 	});
 	let Y=mb("Y",()=>{
-		funcs.switch("y",3);
+		func.switch("y",3);
 	});
 	let areaMode=mb("",()=>{
-		funcs.switch("areaMode",3);
+		func.switch("areaMode",3);
 	});
 	let PC=mb("PC",()=>{
-		funcs.switch("pc",3);
+		func.switch("pc",3);
 	});
 	let XY=mb("X-Y",()=>{
-		funcs.switch("xy",3);
+		func.switch("xy",3);
 	});
 	let YX=mb("Y-X",()=>{
-		funcs.switch("yx",3);
+		func.switch("yx",3);
 	});
 	let OV=mb("OV",()=>{
-		funcs.switch("oval",2);
+		func.switch("oval",2);
 	});
 	let unbiased=mb("",()=>{
-		funcs.switch("unbiased",2);
+		func.switch("unbiased",2);
 	});
 	mb("⚀",()=>calc.random(),true);
 	mb("N ⚀",()=>calc.normRandom(),true);
@@ -122,16 +121,9 @@
 
 	let b=mb(cd("menuButton"),()=>status.menuShown=!status.menuShown);
 
-	let o={
+	return {
 		view:mv,
-		button:b,
-		update:update
+		button:b
 	};
 
-	window.res("menu",(f,s,c)=>{
-		funcs=f,status=s,calc=c;
-		funcs.update(update);
-		return o;
-	});
-
-})();
+});

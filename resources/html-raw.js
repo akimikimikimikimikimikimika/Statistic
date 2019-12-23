@@ -1,19 +1,14 @@
-(()=>{
-
-	let cd=i=>{let d=document.createElement("div");if (i) d.id=i;return d;},ap=(p,c)=>p.appendChild(c),rc=c=>c.parentNode.removeChild(c),tc=(e,c)=>e.classList.toggle(c),sa=(e,k,v)=>e.setAttribute(k,v);
-
-	var status,funcs,calc;
+window.framework("xhtml",(func,status,calc,cd,ap,rc,tc,ss,bcr)=>{
 
 	let r={
-		name:"HTML",
+		name:"XHTML",
 		icon:"HT",
 		artifact:null,
-		range:null,
+		includeRange:true,
+		visible:false,
 		/* Called when this renderer is to be used */
 		setup:()=>{
-			let d=cd("drawView");
-			tc(d,"html");
-			r.range=ap(d,rangeSetup());
+			let d=cd(null,"html");
 			ap(d,axisSetup());
 			ap(d,areaSetup());
 			ap(d,plotSetup());
@@ -21,12 +16,7 @@
 		}
 	};
 
-	/* range */
-	let rangeSetup=()=>{
-		let v=cd("range");
-		["left","right","top","bottom"].forEach(d=>tc(ap(v,cd()),d));
-		return v;
-	};
+	let addCue=func.cueManager(()=>r.visible);
 
 	/* axis */
 	let axisSetup=()=>{
@@ -44,16 +34,16 @@
 		let l=["x","y","pc1","pc2","xy","yx","oval"].map(c=>{
 			let p=ap(v,cd());
 			tc(p,c);
-			["line","area1","area2"].forEach(v=>{
-				if (c=="oval"&&v=="line") return;
+			for (let v of ["line","area1","area2"]) {
+				if (c=="oval"&&v=="line") continue;
 				let e=ap(p,cd());
 				tc(e,v);
-			});
-			return p.style;
+			};
+			return p;
 		});
 
 		/* area modifier */
-		let modify=(s,d,min,sw,t)=>{
+		let modify=(e,d,min,sw,t)=>{
 			let w=(calc.points.length>=min)&&sw;
 			if (!t) {
 				if (w) {
@@ -64,11 +54,11 @@
 						let r=hypot(ah,bw);
 						a=ah/r,b=bw/r,c=ch.map(ch=>ch/r);
 					}
-					s.setProperty("--theta",degree(atan2(b,a))+"deg");
-					c.forEach((v,i)=>s.setProperty("--r"+i,(sw-1)?v:c[2]));
-					s.setProperty("--rate",d.p);
+					ss(e,"--theta",degree(atan2(b,a))+"deg");
+					c.forEach((v,i)=>ss(e,"--r"+i,`${(sw-1)?v:c[2]}`));
+					ss(e,"--rate",`${d.p}`);
 				}
-				else ["--theta","--r0","--r1","--r2","--r3","--r4","--rate"].forEach(v=>s.removeProperty(v));
+				else ["--theta","--r0","--r1","--r2","--r3","--r4","--rate"].forEach(k=>ss(e,k));
 			}
 			else {
 				if (w) {
@@ -80,15 +70,15 @@
 						m[1]*=cr.w/cr.h;
 						m[2]*=cr.h/cr.w;
 					}
-					["xx","xy","yx","yy"].forEach((k,i)=>s.setProperty("--m"+k,m[i]));
-					s.setProperty("--cx",d.cx*inv[0]+d.cy*inv[1]);
-					s.setProperty("--cy",d.cx*inv[2]+d.cy*inv[3]);
+					["xx","xy","yx","yy"].forEach((k,i)=>ss(e,"--m"+k,m[i]));
+					ss(e,"--cx",d.cx*inv[0]+d.cy*inv[1]);
+					ss(e,"--cy",d.cx*inv[2]+d.cy*inv[3]);
 				}
-				else ["--mxx","--mxy","--myx","--myy","--cx","--cy"].forEach(v=>s.removeProperty(v));
+				else ["--mxx","--mxy","--myx","--myy","--cx","--cy"].forEach(k=>ss(e,k));
 			}
 		};
 		/*
-			s: style in node
+			e: node
 			d: calculated data
 			min: minimum number of points (if points<min, the line will be hidden)
 			sw: turn visible/invisible forcedly regardless of points + draw mode
@@ -96,7 +86,7 @@
 		*/
 		/* get rect */
 		let rect=()=>{
-			let r=v.getBoundingClientRect();
+			let r=bcr(v);
 			return {w:r.width/2,h:r.height/2};
 		};
 
@@ -111,11 +101,8 @@
 			modify(l[6],calc.oval,3,status.oval,true);
 		};
 
-		funcs.update(update);
-		funcs.update(()=>{
-			if (!status.squared) update();
-		},true);
-
+		addCue(2,false,update);
+		addCue(1,true,update);
 		return v;
 
 	};
@@ -124,12 +111,13 @@
 	let plotSetup=()=>{
 
 		let v=cd("plot");
+		ss(v,"--r",(status.touch?20:10)+"px");
 
 		let nodes=[];
 		let pt=calc.points;
 
 		/* insert/delete nodes to match nodes to points data */
-		funcs.update(()=>{
+		func.update(()=>{
 			while (nodes.length-pt.length) {
 				if (nodes.length>pt.length) {
 					rc(nodes[0]);
@@ -140,15 +128,11 @@
 		});
 
 		/* apply data to nodes */
-		funcs.update(()=>{
-			let t=status.touch?20:10;
-			let f=v=>`calc( ${v*50}% - ${t}px )`;
+		func.update(()=>{
 			nodes.forEach((e,n)=>{
-				let s=e.style,p=pt[n];
-				s.left=f(1+p.x);
-				s.right=f(1-p.x);
-				s.top=f(1+p.y);
-				s.bottom=f(1-p.y);
+				let p=pt[n];
+				ss(e,"--x",p.x);
+				ss(e,"--y",p.y);
 			});
 		});
 
@@ -156,9 +140,6 @@
 
 	};
 
-	window.res("html",(f,s,c)=>{
-		funcs=f,status=s,calc=c;
-		return r;
-	});
+	return r;
 
-})();
+});
