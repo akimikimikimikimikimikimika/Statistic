@@ -26,7 +26,7 @@ window.framework("header",{
 		args:["sc","mal","csm","cd","html"]
 	},
 	func:{
-		args:["status","ael"]
+		args:["status","html","ael"]
 	},
 	calc:{
 		args:["preset","func","status"]

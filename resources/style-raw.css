@@ -217,7 +217,7 @@ body,#base,#backgroundView,#range,#drawView,#drawView>div,#inputView,#menuView,#
 
 /* screen/printing behavior */
 @media screen {
-	html.standalone{
+	html{
 		width:100vw;
 		height:100vh;
 	}

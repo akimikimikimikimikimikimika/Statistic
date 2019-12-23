@@ -2,7 +2,7 @@ importScripts("../Library/SW/SW.js");
 
 cacheManager({
 	name:"Statistic",
-	build:[2019,12,23],
+	build:[2019,12,24],
 	list:[
 		"Statistic.html",
 		"resources/style.css",

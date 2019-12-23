@@ -1,4 +1,4 @@
-window.framework("func",(status,ael)=>{
+window.framework("func",(status,html,ael)=>{
 
 	/*
 		update(fn) : register a function "fn" in the update list
@@ -13,7 +13,10 @@ window.framework("func",(status,ael)=>{
 		else updateList.forEach(i=>i());
 	};
 	let updateList=[],resizeList=[];
-	ael(window,"resize",()=>resizeList.forEach(f=>f()));
+	ael(window,"resize",()=>{
+		resizeList.forEach(f=>f());
+		setTimeout(()=>resizeList.forEach(f=>f()),100);
+	});
 
 	let cueManager=(callable)=>{
 		let cues=[];
@@ -95,12 +98,13 @@ window.framework("renderer",(xhtml,svg,canvas,cd,ap,rc,tc)=>{
 		length:list.length,
 		view:d,
 		next:()=>{
+			var n=(current+1)%list.length;
 			if (current>=0) {
 				let c=list[current];
 				rc(c.artifact);
 				c.visible=false;
 			}
-			let n=(current+1)%list.length;
+			else n=floor(random()*3);
 			let c=list[n];
 			if (!c.artifact) c.setup(r);
 			if (c.includeRange) ap(c.artifact,r.node);
