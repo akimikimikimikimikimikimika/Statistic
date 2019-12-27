@@ -1,4 +1,4 @@
-window.framework("func",(status,html,ael)=>{
+window.framework("func",(status,csal,ael)=>{
 
 	/*
 		update(fn) : register a function "fn" in the update list
@@ -13,6 +13,8 @@ window.framework("func",(status,html,ael)=>{
 		else updateList.forEach(i=>i());
 	};
 	let updateList=[],resizeList=[];
+	csal("light",m=>{if (m.matches) updateList.forEach(i=>i());});
+	csal("dark",m=>{if (m.matches) updateList.forEach(i=>i());});
 	ael(window,"resize",()=>{
 		resizeList.forEach(f=>f());
 		setTimeout(()=>resizeList.forEach(f=>f()),100);

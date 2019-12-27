@@ -11,11 +11,11 @@ window.framework("status",(sc,mal,csm,cd,html,o)=>{
 		if (t.standalone) c.push("standalone");
 		if (t.browser) c.push(t.browser.toLowerCase());
 		sc(html,c.join(" "));
-		if (o.func) o.func.update();
 	};
 	let getter=(t,p)=>{
 		if (p=="dark") {
 			if (t.colorSchemePreferred) return csm("dark");
+			else return t.dark;
 		}
 		else if (p=="squared") {
 			if (t.printing) return 0;
@@ -33,13 +33,14 @@ window.framework("status",(sc,mal,csm,cd,html,o)=>{
 				update(t);
 			},v?0:500);
 		}
-		if ((p=="dark")&&(t.colorSchemePreferred)) return;
+		if ((p=="dark")&&t.colorSchemePreferred) return;
 		if (p=="colorSchemePreferred") {
-			if (csm("light")||csm("dark")) return;
-			t.dark=csm("dark");
+			if (!(csm("light")||csm("dark"))) return;
+			if (t[p]!=v) t.dark=csm("dark");
 		}
 		t[p]=v;
 		update(t);
+		if (o.func) o.func.update();
 	};
 	var msi=null;
 	let msl=["menu-hidden","before-menu-shown","menu-shown","hiding-menu"];
