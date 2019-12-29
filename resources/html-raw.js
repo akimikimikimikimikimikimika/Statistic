@@ -43,10 +43,9 @@ window.framework("xhtml",(func,status,calc,cd,ap,rc,tc,ss,bcr)=>{
 		});
 
 		/* area modifier */
-		let modify=(e,d,min,sw,t)=>{
-			let w=(calc.points.length>=min)&&sw;
-			if (!t) {
-				if (w) {
+		let modify=(e,d)=>{
+			if (!d.oval) {
+				if (d.view) {
 					var a=d.a,b=d.b,c=d.c;
 					if (!status.squared) {
 						let cr=rect();
@@ -55,13 +54,13 @@ window.framework("xhtml",(func,status,calc,cd,ap,rc,tc,ss,bcr)=>{
 						a=ah/r,b=bw/r,c=ch.map(ch=>ch/r);
 					}
 					ss(e,"--theta",degree(atan2(b,a))+"deg");
-					c.forEach((v,i)=>ss(e,"--r"+i,`${(sw-1)?v:c[2]}`));
+					c.forEach((v,i)=>ss(e,"--r"+i,`${(d.view-1)?v:c[2]}`));
 					ss(e,"--rate",`${d.p}`);
 				}
 				else ["--theta","--r0","--r1","--r2","--r3","--r4","--rate"].forEach(k=>ss(e,k));
 			}
 			else {
-				if (w) {
+				if (d.view) {
 					let m=[];
 					for (var n=0;n<4;n++) m[n]=(n%2?d.b:d.a)*(n%3?sin(d.θ):cos(d.θ))*(n==1?-1:1);
 					let inv=inverseMatrix.apply({},m);
@@ -80,9 +79,6 @@ window.framework("xhtml",(func,status,calc,cd,ap,rc,tc,ss,bcr)=>{
 		/*
 			e: node
 			d: calculated data
-			min: minimum number of points (if points<min, the line will be hidden)
-			sw: turn visible/invisible forcedly regardless of points + draw mode
-			t: false for rectangle, true for oval
 		*/
 		/* get rect */
 		let rect=()=>{
@@ -92,13 +88,13 @@ window.framework("xhtml",(func,status,calc,cd,ap,rc,tc,ss,bcr)=>{
 
 		/* main update function */
 		let update=()=>{
-			modify(l[0],calc.xy[0],1,status.x);
-			modify(l[1],calc.xy[1],1,status.y);
-			modify(l[2],calc.pc[0],2,status.pc);
-			modify(l[3],calc.pc[1],2,status.pc);
-			modify(l[4],calc.lr[0],2,status.xy);
-			modify(l[5],calc.lr[1],2,status.yx);
-			modify(l[6],calc.oval,3,status.oval,true);
+			modify(l[0],calc.xy[0]);
+			modify(l[1],calc.xy[1]);
+			modify(l[2],calc.pc[0]);
+			modify(l[3],calc.pc[1]);
+			modify(l[4],calc.lr[0]);
+			modify(l[5],calc.lr[1]);
+			modify(l[6],calc.oval);
 		};
 
 		addCue(2,false,update);
@@ -111,7 +107,6 @@ window.framework("xhtml",(func,status,calc,cd,ap,rc,tc,ss,bcr)=>{
 	let plotSetup=()=>{
 
 		let v=cd("plot");
-		ss(v,"--r",(status.touch?20:10)+"px");
 
 		let nodes=[];
 		let pt=calc.points;

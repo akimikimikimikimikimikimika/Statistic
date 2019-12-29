@@ -1,6 +1,6 @@
-window.framework("canvas",(func,status,calc,cd,che,ap,gs,bcr)=>{
+window.framework("canvas",(func,status,calc,cd,che,ap,bcr,dpr)=>{
 
-	var L=0,R=0,T=0,B=0,W=0,H=0,M=0,pr,cv,ct;
+	var L=0,R=0,T=0,B=0,W=0,H=0,M=0,cv,ct;
 	/*
 		viewBox of canvas
 		status.squared is false: [-W,+W]×[-H,+H]
@@ -30,20 +30,19 @@ window.framework("canvas",(func,status,calc,cd,che,ap,gs,bcr)=>{
 	let canvasSetup=range=>{
 		cv=che("canvas");
 		ct=cv.getContext("2d");
-		pr=window.devicePixelRatio;
 		addCue(2,true,()=>{
-			L=bcr(range.left).width*pr;
-			R=bcr(range.right).width*pr;
-			T=bcr(range.top).height*pr;
-			B=bcr(range.bottom).height*pr;
+			L=bcr(range.left).width*dpr;
+			R=bcr(range.right).width*dpr;
+			T=bcr(range.top).height*dpr;
+			B=bcr(range.bottom).height*dpr;
 		});
 		addCue(1,false,()=>L=R=T=B=0);
 		addCue(3,true,()=>{
-			let w=bcr(cv).width,h=bcr(cv).height,pr=window.devicePixelRatio;
-			W=(w*pr-L-R)/2,H=(h*pr-T-B)/2;
-			M=max(w*pr/W,h*pr/H);
-			cv.width=w*pr,cv.height=h*pr;
-			ct.clearRect(0,0,w*pr,h*pr);
+			let w=bcr(cv).width,h=bcr(cv).height;
+			W=(w*dpr-L-R)/2,H=(h*dpr-T-B)/2;
+			M=max(w*dpr/W,h*dpr/H);
+			cv.width=w*dpr,cv.height=h*dpr;
+			ct.clearRect(0,0,w*dpr,h*dpr);
 			ct.setTransform(1,0,0,1,L+W,T+H);
 		});
 		return cv;
@@ -56,8 +55,8 @@ window.framework("canvas",(func,status,calc,cd,che,ap,gs,bcr)=>{
 			ct.lineTo(+W+R,0);
 			ct.moveTo(0,-H-T);
 			ct.lineTo(0,+H+B);
-			ct.strokeStyle=gs(cv,"--axis-color",true);
-			ct.lineWidth=1*pr;
+			ct.strokeStyle=func.style("--axis-color");
+			ct.lineWidth=1*dpr;
 			ct.stroke();
 		});
 	};
@@ -65,13 +64,13 @@ window.framework("canvas",(func,status,calc,cd,che,ap,gs,bcr)=>{
 	let areaSetup=()=>{
 
 		/* area modifier */
-		let modify=(v,d,min,sw,t)=>{
-			let w=(calc.points.length>=min)&&sw;
-			if (!w) return;
-			if (!t) {
+		let modify=(v,d)=>{
+			if (!d.view) return;
+			let cl=func.style(`--area-${v}-color`);
+			if (!d.oval) {
 				let a=d.a,b=d.b,c=d.c;
 				for (var n=0;n<3;n++) {
-					let c1=(sw-1)?c[2-n]:c[2],c2=(sw-1)?c[2+n]:c[2];
+					let c1=(d.view-1)?c[2-n]:c[2],c2=(d.view-1)?c[2+n]:c[2];
 					/* c1×(a,b)+M×(±a,∓b),c2×(a,b)+M×(±a,∓b) */
 					ct.beginPath();
 					ct.moveTo(W*(c1*a+M*b),H*(c1*b-M*a));
@@ -81,19 +80,19 @@ window.framework("canvas",(func,status,calc,cd,che,ap,gs,bcr)=>{
 						ct.lineTo(W*(c2*a+M*b),H*(c2*b-M*a));
 						ct.closePath();
 						if (status.printing) {
-							ct.strokeStyle=gs(cv,`--area-${v}-color`,true);
-							ct.strokeWidth=1*pr;
+							ct.strokeStyle=cl;
+							ct.strokeWidth=1*dpr;
 							ct.stroke();
 						}
 						else {
-							ct.fillStyle=hex2rgba(gs(cv,`--area-${v}-color`,true),d.p*0.3+0.1);
+							ct.fillStyle=hex2rgba(cl,d.p*0.3+0.1);
 							ct.fill();
 						}
 					}
 					else {
 						ct.closePath();
-						ct.strokeStyle=hex2rgba(gs(cv,`--area-${v}-color`,true),d.p*0.6+0.2);
-						ct.lineWidth=(status.printing?1:6)*pr;
+						ct.strokeStyle=hex2rgba(cl,d.p*0.6+0.2);
+						ct.lineWidth=(status.printing?1:6)*dpr;
 						ct.stroke();
 					}
 				}
@@ -106,12 +105,12 @@ window.framework("canvas",(func,status,calc,cd,che,ap,gs,bcr)=>{
 					ct.beginPath();
 					ct.ellipse(0,0,r*d.a*(2-n),r*d.b*(2-n),d.θ,0,2*PI);
 					if (status.printing) {
-						ct.strokeStyle=gs(cv,"--area-oval-color",true);
-						ct.lineWidth=2*pr;
+						ct.strokeStyle=cl;
+						ct.lineWidth=2*dpr;
 						ct.stroke();
 					}
 					else {
-						ct.fillStyle=hex2rgba(gs(cv,"--area-oval-color",true),0.5);
+						ct.fillStyle=hex2rgba(cl,0.5);
 						ct.fill();
 					}
 				}
@@ -121,20 +120,17 @@ window.framework("canvas",(func,status,calc,cd,che,ap,gs,bcr)=>{
 		/*
 			v: CSS variable (identifier)
 			d: calculated data
-			min: minimum number of points (if points<min, the line will be hidden)
-			sw: turn visible/invisible forcedly regardless of points + draw mode
-			t: false for rectangle, true for oval
 		*/
 
 		/* main update function */
 		addCue(3,true,()=>{
-			modify("x",calc.xy[0],1,status.x);
-			modify("y",calc.xy[1],1,status.y);
-			modify("pc",calc.pc[0],2,status.pc);
-			modify("pc",calc.pc[1],2,status.pc);
-			modify("xy",calc.lr[0],2,status.xy);
-			modify("yx",calc.lr[1],2,status.yx);
-			modify("oval",calc.oval,3,status.oval,true);
+			modify("x",calc.xy[0]);
+			modify("y",calc.xy[1]);
+			modify("pc",calc.pc[0]);
+			modify("pc",calc.pc[1]);
+			modify("xy",calc.lr[0]);
+			modify("yx",calc.lr[1]);
+			modify("oval",calc.oval);
 		});
 
 	};
@@ -154,7 +150,7 @@ window.framework("canvas",(func,status,calc,cd,che,ap,gs,bcr)=>{
 			ct.lineTo(+W,-H);
 			ct.lineTo(-W,-H);
 			ct.closePath();
-			ct.fillStyle=hex2rgba(gs(cv,"--square-shadow",true),0.4);
+			ct.fillStyle=hex2rgba(func.style("--square-shadow"),0.4);
 			ct.fill();
 		});
 
@@ -163,17 +159,17 @@ window.framework("canvas",(func,status,calc,cd,che,ap,gs,bcr)=>{
 	let plotSetup=()=>{
 
 		let pt=calc.points;
-		let r=(status.touch?20:10)*pr;
 
-		/* apply data to nodes */
+		/* apply data */
 		addCue(3,true,()=>{
 			ct.beginPath();
+			let r=func.plotRadius()*dpr;
 			for (let p of pt) {
 				let x=W*p.x,y=H*p.y;
 				ct.moveTo(x+r,y);
 				ct.arc(x,y,r,0,2*PI);
 			}
-			ct.fillStyle=gs(cv,"--plot-color",true);
+			ct.fillStyle=func.style("--plot-color");
 			ct.fill();
 		});
 

@@ -69,16 +69,17 @@ window.framework("calc",(preset,func,status)=>{
 	n=0; /* size or size-1 */
 	let calc=()=>{
 		n=points.length;
-		if (status.unbiased) n--;
+		let σn=n;
+		if (status.unbiased) σn--;
 		μ.x=μ.y=σ.x=σ.y=σ.m=0;
 		points.forEach(p=>{
 			μ.x+=p.x/n; /* average of x */
 			μ.y+=p.y/n; /* average of y */
 		});
 		points.forEach(p=>{
-			σ.x+=(p.x-μ.x)*(p.x-μ.x)/n; /* variance of x */
-			σ.y+=(p.y-μ.y)*(p.y-μ.y)/n; /* variance of y */
-			σ.m+=(p.x-μ.x)*(p.y-μ.y)/n; /* covariance */
+			σ.x+=(p.x-μ.x)*(p.x-μ.x)/σn; /* variance of x */
+			σ.y+=(p.y-μ.y)*(p.y-μ.y)/σn; /* variance of y */
+			σ.m+=(p.x-μ.x)*(p.y-μ.y)/σn; /* covariance */
 		});
 	};
 
@@ -100,32 +101,40 @@ window.framework("calc",(preset,func,status)=>{
 		else return l[parseInt(v)];
 	};
 	/* for pc/lr creating data */
-	let make=(a,b,d,p)=>{
-		let l=hypot(a,b);
-		let na=a/l,nb=b/l;
-		let c=na*μ.x+nb*μ.y;
-		return {
-			a:na,
-			b:nb,
-			c:dev(c,d),
-			p:p
-		};
+	let make=(a,b,d,p,v)=>{
+		let vw=points.length>=2?v:0;
+		if (vw) {
+			let l=hypot(a,b);
+			let na=a/l,nb=b/l;
+			let c=na*μ.x+nb*μ.y;
+			return {
+				a:na,
+				b:nb,
+				c:dev(c,d),
+				p:p,
+				view:vw
+			};
+		}
+		else return {view:0};
 	};
 
 
 	/* x,y (both included) */
 	let xy=m=>{
+		let w=points.length>=1;
 		let o=[
 			{
 				a:1,b:0,c:null,
-				p:0.6
+				p:0.6,
+				view:w?status.x:0
 			},
 			{
 				a:0,b:1,c:null,
-				p:0.6
+				p:0.6,
+				view:w?status.y:0
 			}
 		];
-		switch (m) {
+		if (w&&o.some(e=>e.view)) switch (m) {
 			case 0: /* standard deviation */
 				o[0].c=dev(μ.x,sqrt(σ.x));
 				o[1].c=dev(μ.y,sqrt(σ.y));
@@ -166,13 +175,15 @@ window.framework("calc",(preset,func,status)=>{
 				σ.x-λ[0],
 				σ.m,
 				sqrt(λ[1]),
-				λ[0]/s
+				λ[0]/s,
+				status.pc
 			),
 			make(
 				σ.m,
 				σ.y-λ[1],
 				sqrt(λ[0]),
-				λ[1]/s
+				λ[1]/s,
+				status.pc
 			)
 		];
 	};
@@ -185,13 +196,15 @@ window.framework("calc",(preset,func,status)=>{
 				-σ.m,
 				+σ.x,
 				sqrt((1-r2)*σ.y)*σ.x/hypot(σ.x,σ.m),
-				r2
+				r2,
+				status.xy
 			),
 			make(
 				+σ.y,
 				-σ.m,
 				sqrt((1-r2)*σ.x)*σ.y/hypot(σ.y,σ.m),
-				r2
+				r2,
+				status.yx
 			)
 		];
 	};
@@ -214,7 +227,9 @@ window.framework("calc",(preset,func,status)=>{
 			b:sqrt(ab[0]),
 			θ:θ,
 			cx:μ.x,
-			cy:μ.y
+			cy:μ.y,
+			oval:true,
+			view:(points.length>=3)&&status.oval
 		};
 	};
 	/*
@@ -233,10 +248,10 @@ window.framework("calc",(preset,func,status)=>{
 	let update=()=>{
 		let v=points.length;
 		if (v>0) calc();
-		if (v>0) c.xy=xy(status.areaMode);
-		if (v>1) c.pc=pc();
-		if (v>1) c.lr=lr();
-		if (v>2) c.oval=oval();
+		c.xy=xy(status.areaMode);
+		c.pc=pc();
+		c.lr=lr();
+		c.oval=oval();
 	};
 
 	func.update(update);

@@ -104,10 +104,10 @@
 	background-color:var(--plot-color);
 	border-radius:50%;
 	position:absolute;
-	left:  calc( 50% + var(--x)*50% - var(--r) );
-	right: calc( 50% - var(--x)*50% - var(--r) );
-	top:   calc( 50% + var(--y)*50% - var(--r) );
-	bottom:calc( 50% - var(--y)*50% - var(--r) );
+	left:  calc( 50% + var(--x)*50% - var(--plot-radius) );
+	right: calc( 50% - var(--x)*50% - var(--plot-radius) );
+	top:   calc( 50% + var(--y)*50% - var(--plot-radius) );
+	bottom:calc( 50% - var(--y)*50% - var(--plot-radius) );
 }
 
 @media screen {
@@ -157,8 +157,5 @@
 	}
 	.html>#area>.oval>div{
 		border-width:2px;
-	}
-	.html>#plot{
-		--r:5px !important;
 	}
 }

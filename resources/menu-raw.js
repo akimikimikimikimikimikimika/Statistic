@@ -50,7 +50,6 @@ window.framework("menu",(func,status,calc,renderer,cd,ap,sa,ss,ael)=>{
 			active=false;
 			e.stopPropagation();
 		});
-		ael(d,"pointermove",disable);
 		ael(d,"pointercancel",disable);
 		ael(d,"pointerout",disable);
 		ael(d,"pointerleave",disable);
@@ -78,6 +77,7 @@ window.framework("menu",(func,status,calc,renderer,cd,ap,sa,ss,ael)=>{
 		bc(YX,"yx","--area-yx-color");
 		bc(OV,"oval","--turned-on");
 		unbiased.textContent=(["B","UB"])[status.unbiased];
+		bc(unbiased,"unbiased","--turned-on");
 	});
 	let bc=(b,s,h)=>ss(b,"background-color",status[s]?`var(${h})`:"");
 

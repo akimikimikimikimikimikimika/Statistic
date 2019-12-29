@@ -1,4 +1,4 @@
-window.framework("func",(status,csal,ael)=>{
+window.framework("func",(status,csal,ael,gs,html)=>{
 
 	/*
 		update(fn) : register a function "fn" in the update list
@@ -62,7 +62,9 @@ window.framework("func",(status,csal,ael)=>{
 			status.colorSchemePreferred=false;
 			status.dark=!status.dark;
 		},
-		switch:(k,m)=>status[k]=(status[k]+1)%m
+		switch:(k,m)=>status[k]=(status[k]+1)%m,
+		style:p=>gs(html,p,true),
+		plotRadius:()=>parseInt(f.style("--plot-radius"))
 	};
 
 	return f;
@@ -86,11 +88,11 @@ window.framework("nodes",(func,renderer,input,menu,cd,ap,rc,ael)=>{
 	ap(base,menu.button);
 
 });
-window.framework("renderer",(xhtml,svg,canvas,cd,ap,rc,tc)=>{
+window.framework("renderer",(xhtml,svg,canvas,webgl,cd,ap,rc,tc)=>{
 
 	let d=cd("drawView");
 	var current=-1;
-	let list=[xhtml,svg,canvas];
+	let list=[xhtml,svg,canvas,webgl];
 
 	let r={node:cd("range")};
 	for (let d of ["left","right","top","bottom"]) r[d]=ap(r.node,tc(cd(),d));
@@ -106,7 +108,7 @@ window.framework("renderer",(xhtml,svg,canvas,cd,ap,rc,tc)=>{
 				rc(c.artifact);
 				c.visible=false;
 			}
-			else n=floor(random()*3);
+			else n=floor(random()*4);
 			let c=list[n];
 			if (!c.artifact) c.setup(r);
 			if (c.includeRange) ap(c.artifact,r.node);

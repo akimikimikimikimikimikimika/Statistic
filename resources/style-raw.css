@@ -220,6 +220,7 @@ body,#base,#backgroundView,#range,#drawView,#drawView>div,#inputView,#menuView,#
 	html{
 		width:100vw;
 		height:100vh;
+		--plot-radius:10px;
 	}
 	body{
 		margin:0px;
@@ -228,9 +229,13 @@ body,#base,#backgroundView,#range,#drawView,#drawView>div,#inputView,#menuView,#
 	.squared{
 		background-color:var(--square-shadow);
 	}
+	.touch{
+		--plot-radius:20px;
+	}
 }
 @page{ size: A4 portrait; }
 @media print {
+	html{--plot-radius:5px;}
 	body{
 		margin:0px;
 		width:100vw;

@@ -1,4 +1,4 @@
-window.framework("svg",(func,status,calc,cd,cse,ap,rc,tc,sa,ss,bcr)=>{
+window.framework("svg",(func,calc,cd,cse,ap,rc,tc,sa,ss,bcr)=>{
 
 	var L=0,R=0,T=0,B=0,W=0,H=0,M=0;
 	/*
@@ -72,14 +72,13 @@ window.framework("svg",(func,status,calc,cd,cse,ap,rc,tc,sa,ss,bcr)=>{
 		});
 
 		/* area modifier */
-		let modify=(e,d,min,sw,t)=>{
-			let w=(calc.points.length>=min)&&sw;
-			if (w) {
-				if (!t) {
+		let modify=(e,d)=>{
+			if (d.view) {
+				if (!d.oval) {
 					let a=d.a,b=d.b,c=d.c;
 					ss(e,"--rate",`${d.p}`);
 					e.childNodes.forEach((e,n)=>{
-						let c1=(sw-1)?c[2-n]:c[2],c2=(sw-1)?c[2+n]:c[2];
+						let c1=(d.view-1)?c[2-n]:c[2],c2=(d.view-1)?c[2+n]:c[2];
 						/* c1×(a,b)+M×(±a,∓b),c2×(a,b)+M×(±a,∓b) */
 						if (n) sa(e,"points",`${W*(c1*a+M*b)},${H*(c1*b-M*a)} ${W*(c1*a-M*b)},${H*(c1*b+M*a)} ${W*(c2*a-M*b)},${H*(c2*b+M*a)} ${W*(c2*a+M*b)},${H*(c2*b-M*a)}`);
 						else sa(e,"x1",W*(c1*a+M*b)),sa(e,"y1",H*(c1*b-M*a)),sa(e,"x2",W*(c1*a-M*b)),sa(e,"y2",H*(c1*b+M*a));
@@ -104,20 +103,17 @@ window.framework("svg",(func,status,calc,cd,cse,ap,rc,tc,sa,ss,bcr)=>{
 		/*
 			e: node
 			d: calculated data
-			min: minimum number of points (if points<min, the line will be hidden)
-			sw: turn visible/invisible forcedly regardless of points + draw mode
-			t: false for rectangle, true for oval
 		*/
 
 		/* main update function */
 		addCue(3,true,()=>{
-			modify(l[0],calc.xy[0],1,status.x);
-			modify(l[1],calc.xy[1],1,status.y);
-			modify(l[2],calc.pc[0],2,status.pc);
-			modify(l[3],calc.pc[1],2,status.pc);
-			modify(l[4],calc.lr[0],2,status.xy);
-			modify(l[5],calc.lr[1],2,status.yx);
-			modify(l[6],calc.oval,3,status.oval,true);
+			modify(l[0],calc.xy[0]);
+			modify(l[1],calc.xy[1]);
+			modify(l[2],calc.pc[0]);
+			modify(l[3],calc.pc[1]);
+			modify(l[4],calc.lr[0]);
+			modify(l[5],calc.lr[1]);
+			modify(l[6],calc.oval);
 		});
 
 		return v;
@@ -141,7 +137,6 @@ window.framework("svg",(func,status,calc,cd,cse,ap,rc,tc,sa,ss,bcr)=>{
 
 		let nodes=[];
 		let pt=calc.points;
-		let r=status.touch?20:10;
 
 		/* insert/delete nodes to match nodes to points data */
 		addCue(3,false,()=>{
@@ -152,7 +147,6 @@ window.framework("svg",(func,status,calc,cd,cse,ap,rc,tc,sa,ss,bcr)=>{
 				}
 				else {
 					let e=ap(v,cse("circle"));
-					sa(e,"r",r);
 					nodes.push(e);
 				}
 			}
@@ -164,6 +158,7 @@ window.framework("svg",(func,status,calc,cd,cse,ap,rc,tc,sa,ss,bcr)=>{
 				let p=pt[n];
 				sa(e,"cx",p.x*W);
 				sa(e,"cy",p.y*H);
+				sa(e,"r",func.plotRadius());
 			});
 		});
 

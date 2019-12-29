@@ -6,6 +6,7 @@ window.framework("status",(sc,mal,csm,cd,html,o)=>{
 			t.colorSchemePreferred?"pcs":(t.dark?"dark":"light"),
 			msl[ms]
 		];
+		if (t.touch) c.push("touch");
 		if (t.squared) c.push("squared");
 		if (t.moving) c.push("moving");
 		if (t.standalone) c.push("standalone");

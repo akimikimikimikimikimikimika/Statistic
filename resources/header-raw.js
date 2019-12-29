@@ -20,13 +20,13 @@ window.framework("preset",()=>{
 
 window.framework("header",{
 	resources:[
-		"preset","status","func","calc","xhtml","svg","canvas","renderer","input","menu","nodes"
+		"preset","status","func","calc","xhtml","svg","canvas","glShaders","webgl","renderer","input","menu","nodes"
 	],
 	status:{
 		args:["sc","mal","csm","cd","html"]
 	},
 	func:{
-		args:["status","csal","ael"]
+		args:["status","csal","ael","gs","html"]
 	},
 	calc:{
 		args:["preset","func","status"]
@@ -35,13 +35,19 @@ window.framework("header",{
 		args:["func","status","calc","cd","ap","rc","tc","ss","bcr"]
 	},
 	svg:{
-		args:["func","status","calc","cd","cse","ap","rc","tc","sa","ss","bcr"]
+		args:["func","calc","cd","cse","ap","rc","tc","sa","ss","bcr"]
 	},
 	canvas:{
-		args:["func","status","calc","cd","che","ap","gs","bcr"]
+		args:["func","status","calc","cd","che","ap","bcr","dpr"]
+	},
+	glShaders:{
+		args:["ael"]
+	},
+	webgl:{
+		args:["glShaders","func","calc","ce","cd","ap","gs","bcr","dpr"]
 	},
 	renderer:{
-		args:["xhtml","svg","canvas","cd","ap","rc","tc"]
+		args:["xhtml","svg","canvas","webgl","cd","ap","rc","tc"]
 	},
 	input:{
 		args:["func","status","calc","renderer","cd","ael"]
